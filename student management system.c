@@ -1,44 +1,132 @@
-//Enhance your coding skills, start writing your code here!!
-//Enhance your coding skills, start writing your code here!!
 #include <stdio.h>
-int main(){
-  int n1,n2;
-  scanf("%d %d\n",&n1,&n2);
-  char op;
-  scanf("%c",&op);
-  printf("Entered values of\n");
-  printf("n1 = %d\n",n1);
-  printf("n2 = %d\n",n2);
-  printf("Enter the Operator [ +, -, *, /, %] :\n");
-  printf("Entered operator = %c\n",op);
-  
-   if(op=='+'){
-    printf("Addition: %d + %d = %d ",n1,n2,n1+n2);
-  }
-  else if(op=='-'){
-  printf("Subtraction: %d - %d = %d",n1,n2,n1-n2);}
-  else if (op=="*"){
-    printf("Multiplication: %d * %d = %d",n1,n2,n1*n2);}
-  else if (op=="/"){
-    printf("Division: %d / %d = %d",n1,n2,n1/n2);}
-  else if (op=="%"){
-    printf("Modulus: %d % %d = %d",n1,n2,n1%n2);
-  }
-  }
-///
+#include <string.h>
 
+#define MAX 50
 
+struct Student {
+    int roll;
+    char name[50];
+    float marks;
+    char grade;
+};
 
-
-//Enhance your coding skills, start writing your code here!!
-#include <stdio.h>
-int main(){
-  int n,fac=1;
-  scanf("%d",&n);
-  if(n>=0){
-   for(int i=1; i<=n;i++){
-    fac*=i;}
-  printf("Factorial of %d = %d",n,fac);
+char calculateGrade(float marks) {
+    if (marks >= 90) return 'A';
+    else if (marks >= 75) return 'B';
+    else if (marks >= 60) return 'C';
+    else if (marks >= 40) return 'D';
+    else return 'F';
 }
 
+void addStudent(struct Student s[], int *n);
+void displayAll(struct Student s[], int n);
+void searchStudent(struct Student s[], int n, int roll);
+void sortStudents(struct Student s[], int n);
+void showStatistics(struct Student s[], int n);
+
+int main() {
+    struct Student s[MAX];
+    int n = 0, choice, roll;
+
+    do {
+        printf("\n===== STUDENT MANAGEMENT SYSTEM =====\n");
+        printf("1. Add Student\n");
+        printf("2. Display All Students\n");
+        printf("3. Search Student by Roll Number\n");
+        printf("4. Sort Students by Marks\n");
+        printf("5. Show Statistics (Topper & Average)\n");
+        printf("6. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch(choice) {
+            case 1: addStudent(s, &n); break;
+            case 2: displayAll(s, n); break;
+            case 3:
+                printf("Enter Roll Number to search: ");
+                scanf("%d", &roll);
+                searchStudent(s, n, roll);
+                break;
+            case 4: sortStudents(s, n); break;
+            case 5: showStatistics(s, n); break;
+            case 6: printf("Exiting program... Thank you!\n"); break;
+            default: printf("Invalid choice! Try again.\n");
+        }
+
+    } while(choice != 6);
+
+    return 0;
 }
+
+void addStudent(struct Student s[], int *n) {
+    if (*n >= MAX) {
+        printf("Database full! Cannot add more students.\n");
+        return;
+    }
+    printf("\nEnter Roll No: ");
+    scanf("%d", &s[*n].roll);
+    printf("Enter Name: ");
+    scanf(" %[^
+]", s[*n].name);
+    printf("Enter Marks (0-100): ");
+    scanf("%f", &s[*n].marks);
+    s[*n].grade = calculateGrade(s[*n].marks);
+    (*n)++;
+    printf("Student added successfully!\n");
+}
+
+void displayAll(struct Student s[], int n) {
+    if (n == 0) {
+        printf("No records found.\n");
+        return;
+    }
+    printf("\n%-10s %-20s %-10s %-10s\n", "Roll", "Name", "Marks", "Grade");
+    printf("--------------------------------------------------\n");
+    for (int i = 0; i < n; i++)
+        printf("%-10d %-20s %-10.2f %-10c\n", s[i].roll, s[i].name, s[i].marks, s[i].grade);
+}
+
+void searchStudent(struct Student s[], int n, int roll) {
+    for (int i = 0; i < n; i++) {
+        if (s[i].roll == roll) {
+            printf("\nStudent Found:\n");
+            printf("Name: %s\nMarks: %.2f\nGrade: %c\n", s[i].name, s[i].marks, s[i].grade);
+            return;
+        }
+    }
+    printf("Student with Roll No %d not found.\n", roll);
+}
+
+void sortStudents(struct Student s[], int n) {
+    struct Student temp;
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = i + 1; j < n; j++) {
+            if (s[i].marks < s[j].marks) {
+                temp = s[i];
+                s[i] = s[j];
+                s[j] = temp;
+            }
+        }
+    }
+    printf("Students sorted by marks (High to Low).\n");
+}
+
+void showStatistics(struct Student s[], int n) {
+    if (n == 0) {
+        printf("No records to analyze.\n");
+        return;
+    }
+    float sum = 0, avg;
+    int topIndex = 0;
+    for (int i = 0; i < n; i++) {
+        sum += s[i].marks;
+        if (s[i].marks > s[topIndex].marks)
+            topIndex = i;
+    }
+    avg = sum / n;
+    printf("\nClass Average: %.2f\n", avg);
+    printf("Topper: %s (Roll: %d, Marks: %.2f, Grade: %c)\n",
+           s[topIndex].name, s[topIndex].roll, s[topIndex].marks, s[topIndex].grade);
+}
+
+
